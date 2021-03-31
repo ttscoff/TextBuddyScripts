@@ -25,8 +25,7 @@ function post(input) {
 
   matches.forEach((m) => {
     rx = new RegExp(propRX);
-    m = m.trim();
-    let match = rx.exec(m);
+    let match = rx.exec(m.trim());
     if (match) {
       let type = match[1],
         title = match[2],
