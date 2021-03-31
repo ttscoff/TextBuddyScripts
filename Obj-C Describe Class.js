@@ -5,6 +5,7 @@
  *
  * 2021-03-31 Sort properties alphanumerically
  *            Fix for missing every other property. D'oh.
+ *            Put everything on new lines to make editing easier
  */
 
 function post(input) {
@@ -46,15 +47,15 @@ function post(input) {
   let places = [];
   let replaces = [];
 
-  places.push(`${className} description: %@`);
-  replaces.push(`[super description]`);
+  places.push(`${className} description: %@\\n"`);
+  replaces.push(`                                     [super description]`);
 
   Object.keys(props).forEach((prop) => {
-    places.push(props[prop].placeholder);
-    replaces.push(props[prop].replacement);
+    places.push(`                                     @"${props[prop].placeholder}\\n"`);
+    replaces.push(`                                     ${props[prop].replacement}`);
   });
 
-  output += `${places.join('\\n')}", ${replaces.join(', ')}];\n}`;
+  output += `${places.join("\n")},\n${replaces.join(",\n")}];\n}`;
   return output;
 }
 
