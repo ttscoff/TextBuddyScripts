@@ -1,3 +1,17 @@
+/**
+ * Implementation to Declaration
+ * Just turns:
+ *
+ * - (NSString *)myMethod:(NSString *)params {
+   * // BUTTLOAD OF CODE
+ * }
+ *
+ * Into
+ *
+ * - (NSString *)myMethod:(NSString *)params;
+ */
+
+
 function post(input) {
   let output = [],
       methodRX = /^([-+].*?)\s*(?=\{|$)/mg;

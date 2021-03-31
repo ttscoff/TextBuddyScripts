@@ -1,35 +1,60 @@
+/**
+ * Describe Class
+ * Run on the contents of an @interface
+ * Returns a [description] method with all of the properties for a class.
+ *
+ * 2021-03-31 Sort properties alphanumerically
+ */
+
 function post(input) {
   let output = `- (NSString *)description {\n\treturn [NSString stringWithFormat:@"`,
-      placeholders = [],
-      replacements = [],
-      propRX = /[\s\t]*@property\s*(?:\([\s\S]*?\))?\s*([^<\s]+)\s*(?:<[\s\S]*?>)?\s*(?:\s*\*\s*)?(?:\s*_\S+)?\s*([\s\S]*?);/g;
+    props = {},
+    propRX = /[\s\t]*@property\s*(?:\([\s\S]*?\))?\s*([^<\s]+)\s*(?:<[\s\S]*?>)?\s*(?:\s*\*\s*)?(?:\s*_\S+)?\s*([\s\S]*?);/g;
 
   let classRX = /@interface\s+(.*?)\s*:/;
   if (classRX.test(input)) {
     className = classRX.exec(input)[1];
   }
-  placeholders.push(`${className} description: %@`);
-  replacements.push(`[super description]`);
+
+  // placeholders.push(`${className} description: %@`);
+  // replacements.push(`[super description]`);
 
   let matches = input.match(propRX);
   matches.forEach((m) => {
     let match = propRX.exec(m);
     if (match) {
       let type = match[1],
-          title = match[2],
-          result = typeForTitle(title, type);
-      placeholders.push(result.placeholder);
-      replacements.push(result.replacement);
+        title = match[2],
+        result = typeForTitle(title, type);
+      props[title] = {
+        placeholder: result.placeholder,
+        replacement: result.replacement
+      };
     }
-
   });
-  let places = placeholders.join('\\n');
-  let replaces = replacements.join(', ');
-  output += `${places}", ${replaces}];\n}`;
+  props = Object.keys(props).sort().reduce(
+    (obj, key) => {
+      obj[key] = props[key];
+      return obj;
+    },
+    {}
+  );
+  let places = [];
+  let replaces = [];
+
+  places.push(`${className} description: %@`);
+  replaces.push(`[super description]`);
+
+  Object.keys(props).forEach((prop) => {
+    places.push(props[prop].placeholder);
+    replaces.push(props[prop].replacement);
+  });
+
+  output += `${places.join('\\n')}", ${replaces.join(', ')}];\n}`;
   return output;
 }
 
-function typeForTitle(title,type) {
+function typeForTitle(title, type) {
   switch (type) {
     case 'unsignedint':
       holder = "%u";
@@ -116,5 +141,8 @@ function typeForTitle(title,type) {
       replacement = `self.${title}`;
       break;
   }
-  return {placeholder:`${title}: ${holder}`, replacement: replacement}
+  return {
+    placeholder: `${title}: ${holder}`,
+    replacement: replacement
+  }
 }
