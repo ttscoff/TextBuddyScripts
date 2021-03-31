@@ -4,12 +4,13 @@
  * Returns a [description] method with all of the properties for a class.
  *
  * 2021-03-31 Sort properties alphanumerically
+ *            Fix for missing every other property. D'oh.
  */
 
 function post(input) {
   let output = `- (NSString *)description {\n\treturn [NSString stringWithFormat:@"`,
     props = {},
-    propRX = /[\s\t]*@property\s*(?:\([\s\S]*?\))?\s*([^<\s]+)\s*(?:<[\s\S]*?>)?\s*(?:\s*\*\s*)?(?:\s*_\S+)?\s*([\s\S]*?);/g;
+    propRX = "[\\s\\t]*@property\\s*(?:\\([\\s\\S]*?\\))?\\s*([^<\\s]+)\\s*(?:<[\\s\\S]*?>)?\\s*(?:\\s*\\*\\s*)?(?:\\s*_\\S+)?\\s*([\\s\\S]*?);";
 
   let classRX = /@interface\s+(.*?)\s*:/;
   if (classRX.test(input)) {
@@ -18,10 +19,13 @@ function post(input) {
 
   // placeholders.push(`${className} description: %@`);
   // replacements.push(`[super description]`);
+  let rx = new RegExp(propRX, 'gm');
+  let matches = input.match(rx);
 
-  let matches = input.match(propRX);
   matches.forEach((m) => {
-    let match = propRX.exec(m);
+    rx = new RegExp(propRX);
+    m = m.trim();
+    let match = rx.exec(m);
     if (match) {
       let type = match[1],
         title = match[2],
