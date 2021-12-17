@@ -20,38 +20,37 @@ function post(input) {
 
   // placeholders.push(`${className} description: %@`);
   // replacements.push(`[super description]`);
-  let rx = new RegExp(propRX, 'gm');
+  let rx = new RegExp(propRX, "gm");
   let matches = input.match(rx);
 
-  matches.forEach((m) => {
+  matches.forEach(m => {
     rx = new RegExp(propRX);
     let match = rx.exec(m.trim());
     if (match) {
-      let type = match[1],
-        title = match[2],
-        result = typeForTitle(title, type);
+      let type = match[1], title = match[2], result = typeForTitle(title, type);
       props[title] = {
         placeholder: result.placeholder,
         replacement: result.replacement
       };
     }
   });
-  props = Object.keys(props).sort().reduce(
-    (obj, key) => {
-      obj[key] = props[key];
-      return obj;
-    },
-    {}
-  );
+  props = Object.keys(props).sort().reduce((obj, key) => {
+    obj[key] = props[key];
+    return obj;
+  }, {});
   let places = [];
   let replaces = [];
 
   places.push(`${className} description: %@\\n"`);
   replaces.push(`                                     [super description]`);
 
-  Object.keys(props).forEach((prop) => {
-    places.push(`                                     @"${props[prop].placeholder}\\n"`);
-    replaces.push(`                                     ${props[prop].replacement}`);
+  Object.keys(props).forEach(prop => {
+    places.push(
+      `                                     @"${props[prop].placeholder}\\n"`
+    );
+    replaces.push(
+      `                                     ${props[prop].replacement}`
+    );
   });
 
   output += `${places.join("\n")},\n${replaces.join(",\n")}];\n}`;
@@ -60,83 +59,83 @@ function post(input) {
 
 function typeForTitle(title, type) {
   switch (type) {
-    case 'unsignedint':
+    case "unsignedint":
       holder = "%u";
       replacement = `self.${title}`;
       break;
-    case 'unsignedchar':
+    case "unsignedchar":
       holder = "%c";
       replacement = `self.${title}`;
       break;
-    case 'unichar':
+    case "unichar":
       holder = "%C";
       replacement = `self.${title}`;
       break;
-    case 'int':
-    case 'NSInteger':
-    case 'NSUInteger':
+    case "int":
+    case "NSInteger":
+    case "NSUInteger":
       holder = "%zd";
       replacement = `self.${title}`;
       break;
-    case 'double':
-    case 'float':
-    case 'CGFloat':
+    case "double":
+    case "float":
+    case "CGFloat":
       holder = "%f";
       replacement = `self.${title}`;
       break;
-    case 'CFIndex':
+    case "CFIndex":
       holder = "%ld";
       replacement = `self.${title}`;
       break;
-    case 'pointer':
+    case "pointer":
       holder = "%p";
       replacement = `self.${title}`;
       break;
-    case 'BOOL':
+    case "BOOL":
       holder = "%i";
       replacement = `self.${title}`;
       break;
-    case 'NSRange':
+    case "NSRange":
       holder = "%@";
       replacement = `NSStringFromRange(self.${title})`;
       break;
-    case 'CGPoint':
+    case "CGPoint":
       holder = "%@";
       replacement = `NSStringFromCGPoint(self.${title})`;
       break;
-    case 'CGVector':
+    case "CGVector":
       holder = "%@";
       replacement = `NSStringFromCGVector(self.${title})`;
       break;
-    case 'CGSize':
+    case "CGSize":
       holder = "%@";
       replacement = `NSStringFromCGSize(self.${title})`;
       break;
-    case 'CGRect':
+    case "CGRect":
       holder = "%@";
       replacement = `NSStringFromCGRect(self.${title})`;
       break;
-    case 'CGAffineTransform':
+    case "CGAffineTransform":
       holder = "%@";
       replacement = `NSStringFromCGAffineTransform(self.${title})`;
       break;
-    case 'UIEdgeInsets':
+    case "UIEdgeInsets":
       holder = "%@";
       replacement = `NSStringFromUIEdgeInsets(self.${title})`;
       break;
-    case 'UIOffset':
+    case "UIOffset":
       holder = "%@";
       replacement = `NSStringFromUIOffset(self.${title})`;
       break;
-    case 'SEL':
+    case "SEL":
       holder = "%@";
       replacement = `NSStringFromSelector(self.${title})`;
       break;
-    case 'Class':
+    case "Class":
       holder = "%@";
       replacement = `NSStringFromClass(self.${title})`;
       break;
-    case 'Protocol':
+    case "Protocol":
       holder = "%@";
       replacement = `NSStringFromProtocol(self.${title})`;
       break;
@@ -148,5 +147,5 @@ function typeForTitle(title, type) {
   return {
     placeholder: `${title}: ${holder}`,
     replacement: replacement
-  }
+  };
 }
